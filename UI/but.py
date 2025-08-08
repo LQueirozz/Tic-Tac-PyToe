@@ -2,7 +2,7 @@ import pygame
 import config
 
 class Button():
-    def __init__(self, x, y, wdt, hgt, txt, font, act, textColor=config.WHITE, clr= config.GREEN, bRad: int=-1):
+    def __init__(self, num, x, y, wdt, hgt, txt, font, act, textColor=config.WHITE, clr= config.GREEN, bRad: int=-1):
         """
         -> x and y coordinates
         -> width and height
@@ -18,6 +18,7 @@ class Button():
         self.action= act
         self.color= clr
         self.border= bRad
+        self.num=num
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, border_radius= self.border)

@@ -1,5 +1,5 @@
 import pygame
-from config import init_Pygame, BACKGROUND_COLOR, GREEN, pos
+from config import init_Pygame, BACKGROUND_COLOR, GREEN, O_POS, X_POS
 import GAME.gameManegement
 from UI.screens import Menu_Screen
 
@@ -10,17 +10,21 @@ def main():
 
     running= True
     while running:
+        screen.fill(BACKGROUND_COLOR)
         scr= state.getCurrentState()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-            scr.handleEvents(event, screen)
+            if type(scr)== Menu_Screen:
+                scr.handleEvents(event, screen)
+                scr.draw(screen)
+                pygame.display.flip()
 
-
-        screen.fill(BACKGROUND_COLOR)
-        scr.draw(pos, screen)
-        pygame.display.flip()
+            else:
+                scr.handleEvents(event, screen)
+                scr.draw(X_POS, O_POS, screen)
+                pygame.display.flip()
 
         clock.tick(60)
 

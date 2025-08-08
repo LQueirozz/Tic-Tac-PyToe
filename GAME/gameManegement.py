@@ -2,15 +2,13 @@ import pygame
 import config
 import UI.but
 
-
-
-
 class GameState():
     def __init__(self):
-        abc=[0,0,0,0,0,0,0,0,0]
+        self.abc=[0, 0, 0 , 0, 0, 0, 0, 0, 0]
         from UI.screens import Menu_Screen, Game_Screen
-        self.menuScreen= UI.screens.Menu_Screen(self)
-        self.gameScreen= UI.screens.Game_Screen(self, abc)
+        self.menuScreen= Menu_Screen(self)
+        self.gameScreen= Game_Screen(self, self.abc)
+
         self.currentState= "menu"
 
     def switch_To_GameState(self):
@@ -21,12 +19,16 @@ class GameState():
         if self.currentState=="game":
             self.currentState="menu"
 
+    def switch_To_WinState(self):
+        self.currentState=="WIN"
+
     def getCurrentState(self):
         if self.currentState== "menu":
             return self.menuScreen
 
         if self.currentState=="game":
             return self.gameScreen
+
 
 
     
