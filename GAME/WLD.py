@@ -21,6 +21,23 @@ class Win_Or_Draw:
                     return(i, i+6)
             
         return ()
+    
+    @staticmethod
+    def WhoWon(lst: list):
+        if lst[0]==lst[4]==lst[8]!=0:
+            return lst[0]
+        
+        if lst[2]==lst[4]==lst[6]!=0:
+            return lst[2]
+        
+        for i in range (0,9):
+            if i in [0, 3, 6]:
+                if lst[i]==lst[i+1]==lst[i+2] !=0:
+                    return lst[i]
+
+            if i in [0, 1, 2]:
+                if lst[i]==lst[i+3]==lst[i+6] !=0:
+                    return lst[i]
             
   
     @staticmethod

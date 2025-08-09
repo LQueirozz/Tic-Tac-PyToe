@@ -1,7 +1,7 @@
 import pygame
 from config import init_Pygame, BACKGROUND_COLOR, GREEN, O_POS, X_POS
 import GAME.gameManegement
-from UI.screens import Menu_Screen
+from UI.screens import Menu_Screen, PVComp_Game_Screen, PVP_Game_Screen, Win_Screen, Tie_Screen
 
 def main():
     screen = init_Pygame()
@@ -16,16 +16,17 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            if type(scr)== Menu_Screen:
+            if isinstance(scr, Menu_Screen):
                 scr.handleEvents(event, screen)
-                scr.draw(screen)
-                pygame.display.flip()
 
-            else:
+            elif isinstance(scr, PVP_Game_Screen):
                 scr.handleEvents(event, screen)
-                scr.draw(X_POS, O_POS, screen)
-                pygame.display.flip()
 
+            elif isinstance(scr, PVComp_Game_Screen):
+                scr.handleEvents(event, screen)
+
+        scr.draw(screen)
+        pygame.display.flip()
         clock.tick(60)
 
     # Quit Pygame
