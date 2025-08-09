@@ -20,14 +20,14 @@ class Menu_Screen:
 
     def settingUp(self):
         btn1= Button(
-            num= 0,
+            num= 0, clr= config.PURPLE,
             x=220, y=200, 
             wdt= 360, hgt=80, 
             txt='Player Vs Player', font= config.MEDIUM_FONT, 
             act=self.testingClicks, bRad=40)
         
         btn2= Button(
-            num=1,
+            num=1, clr= config.PURPLE,
             x=220, y=320, 
             wdt= 360, hgt=80, 
             txt='Player Vs Machine', font= config.MEDIUM_FONT, 
@@ -39,7 +39,7 @@ class Menu_Screen:
         self.MG.execute_All(event, screen)
 
     def draw(self, screen,):
-        title= config.BIG_FONT.render('TIC - TAC - (.PY)TOE', True, config.GREEN)
+        title= config.BIG_FONT.render('TIC - TAC - (.PY)TOE', True, config.BLACK)
         screen.blit(title, (220, 40))
         self.MG.draw_All(screen)
 
@@ -67,11 +67,11 @@ class Game_Screen:
         textRect2= textSurface2.get_rect(topleft= (10, 5))
         
         if who== 1:
-            clr1= config.MEDIUM_GREEN
-            clr2= config.GREEN
+            clr1= colors(1, False)
+            clr2= colors(2, True)
         else:
-            clr1= config.GREEN
-            clr2= config.MEDIUM_GREEN
+            clr1= colors(1, True)
+            clr2= colors(2, False)
 
         pygame.draw.rect(screen, clr1, self.Player1_Rect, border_top_left_radius=20, border_top_right_radius=20)
         pygame.draw.rect(screen, clr2, self.Player2_Rect, border_bottom_left_radius=20, border_bottom_right_radius=20)
@@ -83,7 +83,8 @@ class Game_Screen:
         alreadyPlaced= self.lst
         listOfButtons= self.MG.btnList
         mouse = pygame.mouse.get_pos()
-        color= config.MEDIUM_GREEN
+        colorX= colors(1, True)
+        colorO= colors(2, True)
         inSquare=False
 
         for b in listOfButtons:
@@ -92,18 +93,18 @@ class Game_Screen:
                 if alreadyPlaced[b.num] !=0:
                     continue
                 if obj==1:
-                    X= config.X_FONT.render('X', True, color)
+                    X= config.X_FONT.render('X', True, colorX)
                     screen.blit(X, config.X_POS[b.num])
                 elif obj==-1:
-                    pygame.draw.circle(screen, color, config.O_POS[b.num], config.O_RADIUS , 20)
+                    pygame.draw.circle(screen, colorO, config.O_POS[b.num], config.O_RADIUS , 20)
                 break
                 
         if not inSquare:
             if obj==1:
-                X= config.X_FONT.render('X', True, color)
+                X= config.X_FONT.render('X', True, colorX)
                 screen.blit(X, mouse)
             elif obj==-1:
-                pygame.draw.circle(screen, color, mouse, config.O_RADIUS , 20)
+                pygame.draw.circle(screen, colorO, mouse, config.O_RADIUS , 20)
 
 
     def settingUp(self):
@@ -135,11 +136,11 @@ class Game_Screen:
 
         for p, i in enumerate(self.lst):
             if i==1:
-                X= config.X_FONT.render('X', True, config.GREEN)
+                X= config.X_FONT.render('X', True, colors(1, False))
                 screen.blit(X, Xplaces[p])
 
             elif i==-1:
-                pygame.draw.circle(screen, config.GREEN, Oplaces[p], config.O_RADIUS , 20)
+                pygame.draw.circle(screen, colors(2, False), Oplaces[p], config.O_RADIUS , 20)
 
             elif i==0:
                 continue
@@ -187,7 +188,7 @@ class Game_Screen:
         screen.blit(textSurface, textRect)
         start= coordinates[0]
         end= coordinates[1]
-        pygame.draw.line(screen, config.DARK_PINK, start, end, 8)
+        pygame.draw.line(screen, config.ORANGE, start, end, 8)
 
 
     def Tie_Screen(self, screen):
@@ -202,6 +203,19 @@ class Game_Screen:
         textSurface2= font.render('TIE!', True, (0,0,0))
         textRect2= textSurface2.get_rect(center=center2)
         screen.blit(textSurface2, textRect2)
+
+def colors(num: int, light: bool):
+    if num==1 and light:
+        return config.LIGHTER_BLUE
+        
+    if num==1 and not light:
+        return config.BLUE
+        
+    if num==2 and light:
+        return config.LIGHTER_PINK
+        
+    if num==2 and not light:
+        return config.PINK
 
 
 
