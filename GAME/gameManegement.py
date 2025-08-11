@@ -4,14 +4,11 @@ import UI.but
 
 class GameState():
     def __init__(self):
-        self.abc=[0, 0, 0 , 0, 0, 0, 0, 0, 0]
-        from UI.screens import Menu_Screen, PVP_Game_Screen, PVComp_Game_Screen, Win_Screen, Tie_Screen
+        self.board=[0, 0, 0 , 0, 0, 0, 0, 0, 0]
+        from UI.screens import Menu_Screen, PVP_Game_Screen, PVComp_Game_Screen
         self.menuScreen= Menu_Screen(self)
-        self.PVPgameScreen= PVP_Game_Screen(self, self.abc)
-        self.PVCOMPgameScreen= PVComp_Game_Screen(self, self.abc)
-        compId= self.PVCOMPgameScreen.comp
-        self.WinScreen=Win_Screen(self, self.abc, compId)
-        self.TieState= Tie_Screen(self, self.abc)
+        self.PVPgameScreen= PVP_Game_Screen(self, self.board)
+        self.PVCOMPgameScreen= PVComp_Game_Screen(self, self.board)
         self.Numturn=1
 
         self.currentState= ["menu"]
@@ -35,6 +32,7 @@ class GameState():
         self.currentState.append('TIE')
 
     def getCurrentState(self):
+        from UI.screens import Win_Screen, Tie_Screen
         if self.currentState[-1]== "menu":
             return self.menuScreen
 
@@ -45,10 +43,22 @@ class GameState():
             return self.PVCOMPgameScreen
         
         if self.currentState[-1]=="WIN":
+            if self.currentState[-2]== "PVCOMPgame":
+                compId= self.PVCOMPgameScreen.comp
+                self.WinScreen=Win_Screen(self, self.board, compId)
+
+            else:
+                self.WinScreen=Win_Screen(self, self.board)
             return self.WinScreen
         
         if self.currentState[-1]== 'TIE':
-            return self.TieState
+            if self.currentState[-2]== "PVCOMPgame":
+                compId= self.PVCOMPgameScreen.comp
+                self.TieScreen=Tie_Screen(self, self.board, compId)
+
+            else:
+                self.WinScreen=Tie_Screen(self, self.board)
+            return self.TieScreen
 
 
 

@@ -29,8 +29,11 @@ def basicGameScreen(turn, lst: list, screen, comp=0):
     if turn== 1:
         clr1= colors(1, False)
         clr2= colors(2, True)
-    else:
+    elif turn==-1:
         clr1= colors(1, True)
+        clr2= colors(2, False)
+    else:
+        clr1= colors(1, False)
         clr2= colors(2, False)
 
     pygame.draw.rect(screen, clr1, Player1_Rect, border_top_left_radius=20, border_top_right_radius=20)
@@ -62,12 +65,12 @@ class Menu_Screen:
         self.state=stateManager
         self.settingUp()
 
-    def testingClicks(self):
-        print('You chose PvP!')
+    def Start_PVP(self):
+        #print('You chose PvP!')
         self.state.switch_To_PVPGameState()
 
-    def testingClicks2(self):
-        print('You chose PvComp!')
+    def Start_PVCOMP(self):
+        #print('You chose PvComp!')
         self.state.switch_To_PVCOMPGameState()
 
     def settingUp(self):
@@ -76,14 +79,14 @@ class Menu_Screen:
             x=220, y=200, 
             wdt= 360, hgt=80, 
             txt='Player Vs Player', font= config.MEDIUM_FONT, 
-            act=self.testingClicks, bRad=40)
+            act=self.Start_PVP, bRad=40)
         
         btn2= Button(
             num=1, clr= config.PURPLE,
             x=220, y=320, 
             wdt= 360, hgt=80, 
             txt='Player Vs Machine', font= config.MEDIUM_FONT, 
-            act=self.testingClicks2, bRad=40)
+            act=self.Start_PVCOMP, bRad=40)
         
         self.MG.settingUpButtons(btn1, btn2)
 
@@ -99,14 +102,14 @@ class PVP_Game_Screen:
     def __init__(self, stateManeger, pos:list):
         self.player_turn=1
         self.game_over=False
-        self.lst= pos
+        self.board= pos
         self.state=stateManeger
         self.MG= ButtonManagement()
         self.settingUp()
 
     def where_Will_You_Place(self, screen):
         obj=self.player_turn
-        alreadyPlaced= self.lst
+        alreadyPlaced= self.board
         listOfButtons= self.MG.btnList
         mouse = pygame.mouse.get_pos()
         colorX= colors(1, True)
@@ -153,21 +156,21 @@ class PVP_Game_Screen:
         self.MG.execute_All(event, screen)
 
     def draw(self, screen):
-        basicGameScreen(self.player_turn, self.lst, screen)
+        basicGameScreen(self.player_turn, self.board, screen)
         if not self.game_over:
             self.where_Will_You_Place(screen)
     
     def place_object(self, Num: int):
         if self.game_over==False:
-            if self.lst[Num]==0:
-                self.lst[Num]= self.player_turn
+            if self.board[Num]==0:
+                self.board[Num]= self.player_turn
 
-            win_coords = WLD.Win_Or_Draw.Win(self.lst)
+            win_coords = WLD.Win_Or_Draw.Win(self.board)
             if len(win_coords) != 0:
                 self.game_over = True
                 self.state.switch_To_WinState()
 
-            elif WLD.Win_Or_Draw.Tie(self.lst):
+            elif WLD.Win_Or_Draw.Tie(self.board):
                 self.game_over = True
                 self.state.switch_To_TieState()                
 
@@ -178,14 +181,14 @@ class PVP_Game_Screen:
 class Win_Screen:
     def __init__(self, stateManager, lst:list, comp=0):
         self.state=stateManager
-        self.lst= lst
+        self.board= lst
         self.comp=comp
        
     def draw(self, screen):
-        self.winner= WLD.Win_Or_Draw.WhoWon(self.lst)
-        coordinates = WLD.Win_Or_Draw.Win(self.lst)
+        self.winner= WLD.Win_Or_Draw.WhoWon(self.board)
+        coordinates = WLD.Win_Or_Draw.Win(self.board)
         winning_line = WLD.Win_Or_Draw.Calculate_Line(coordinates)
-        basicGameScreen(self.winner, self.lst, screen, self.comp)
+        basicGameScreen(self.winner, self.board, screen, self.comp)
         font= config.BIG_FONT
         textSurface= font.render('WINNER!', True, (0,0,0))
 
@@ -202,11 +205,12 @@ class Win_Screen:
 
 
 class Tie_Screen:
-    def __init__(self, stateManager, lst):
+    def __init__(self, stateManager, lst, comp: int=0):
         self.state= stateManager
-        self.lst=lst
+        self.board=lst
+        self.comp=comp
     def draw(self, screen):
-        basicGameScreen(1, self.lst, screen)
+        basicGameScreen(0, self.board, screen, self.comp)
         center1= (400, 760)
         center2= (400, 40)
 
@@ -227,7 +231,7 @@ class PVComp_Game_Screen:
         self.player= -1* self.comp
         self.computer= comp.computer(pos, self.comp)
         self.game_over=False
-        self.lst= pos
+        self.board= pos
         self.state=stateManager
         self.MG= ButtonManagement()
         self.settingUp()
@@ -242,7 +246,7 @@ class PVComp_Game_Screen:
 
     def where_Will_You_Place(self, screen):
         obj=self.player
-        alreadyPlaced= self.lst
+        alreadyPlaced= self.board
         listOfButtons= self.MG.btnList
         mouse = pygame.mouse.get_pos()
         colorX= colors(1, True)
@@ -291,41 +295,58 @@ class PVComp_Game_Screen:
     def computerTurn(self):
         self.computer.analysis()
         m = self.computer.play
-        self.lst[m]=self.comp
+        self.board[m]=self.comp
 
     def computerPlay(self):
+        from time import time
         if self.player_turn == self.comp:
-            self.computerTurn()
-            self.player_turn=self.player
+            #If you want the computer to look like it's thinking:
+            if not hasattr(self, 'start_thinking_time'):
+                self.start_thinking_time= time()
 
-        win_coords = WLD.Win_Or_Draw.Win(self.lst)
+            elif time()- self.start_thinking_time >= 1.0:
+                self.computerTurn()
+                self.player_turn= -1*self.player_turn
+                delattr(self, 'start_thinking_time')
+
+            #if not:
+            #self.computerTurn()
+            #self.player_turn= -1*self.player_turn
+        win_coords = WLD.Win_Or_Draw.Win(self.board)
         if len(win_coords) != 0:
             self.game_over = True
             self.state.switch_To_WinState()
 
+        elif WLD.Win_Or_Draw.Tie(self.board):
+            self.game_over = True
+            self.state.switch_To_TieState()   
+
     def draw(self, screen):
-        basicGameScreen(self.player_turn, self.lst, screen, comp= self.comp)
-        self.computerPlay()
-        if not self.game_over:
-            self.where_Will_You_Place(screen)
+        basicGameScreen(self.player_turn, self.board, screen, comp= self.comp)
+        if self.player_turn == self.comp:             
+            self.computerPlay()
+        else:
+            if not self.game_over:
+                self.where_Will_You_Place(screen)
     
     def place_object(self, Num: int):
         if self.game_over==False and self.player_turn==self.player:
-            if self.lst[Num]==0:
-                self.lst[Num]= self.player_turn
+            if self.board[Num]==0:
+                self.board[Num]= self.player_turn
 
-            win_coords = WLD.Win_Or_Draw.Win(self.lst)
+            win_coords = WLD.Win_Or_Draw.Win(self.board)
             if len(win_coords) != 0:
                 self.game_over = True
                 self.state.switch_To_WinState()
 
-            elif WLD.Win_Or_Draw.Tie(self.lst):
+            elif WLD.Win_Or_Draw.Tie(self.board):
                 self.game_over = True
                 self.state.switch_To_TieState()                
 
             else:
                 self.player_turn*=-1    
-                self.draw(screen)
+        
+        self.draw(screen)
     
         
 
