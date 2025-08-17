@@ -225,11 +225,11 @@ class Tie_Screen:
 
 class PVComp_Game_Screen:
     def __init__(self, stateManager, pos:list):
-        from GAME import comp
+        from GAME import compAlg
         self.player_turn=1
         self.comp= self.defineNums()
         self.player= -1* self.comp
-        self.computer= comp.computer(pos, self.comp)
+        self.computer= compAlg.computer(pos, self.comp)
         self.game_over=False
         self.board= pos
         self.state=stateManager
@@ -293,25 +293,24 @@ class PVComp_Game_Screen:
         self.MG.execute_All(event, screen)
 
     def computerTurn(self):
-        self.computer.analysis()
-        m = self.computer.play
+        m = self.computer.Best_Score()
         self.board[m]=self.comp
 
     def computerPlay(self):
         from time import time
         if self.player_turn == self.comp:
             #If you want the computer to look like it's thinking:
-            if not hasattr(self, 'start_thinking_time'):
+            """if not hasattr(self, 'start_thinking_time'):
                 self.start_thinking_time= time()
 
             elif time()- self.start_thinking_time >= 1.0:
                 self.computerTurn()
                 self.player_turn= -1*self.player_turn
-                delattr(self, 'start_thinking_time')
+                delattr(self, 'start_thinking_time')"""
 
             #if not:
-            #self.computerTurn()
-            #self.player_turn= -1*self.player_turn
+            self.computerTurn()
+            self.player_turn= -1*self.player_turn
         win_coords = WLD.Win_Or_Draw.Win(self.board)
         if len(win_coords) != 0:
             self.game_over = True

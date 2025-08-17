@@ -3,7 +3,6 @@ class computer:
     def __init__(self, board:list, num: int):
         self.board=board  #The grid that is being played on
         self.whoAmI=num   #The computer ID (-1 for O, 1 for X)
-        self.show_thought_process= False #Prints constantly the idea  behind the computer move
 
     def Get_Num_Turns(self):
         """Finds how many turns have been taken previously"""
